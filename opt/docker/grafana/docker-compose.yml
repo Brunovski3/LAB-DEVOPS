@@ -1,0 +1,27 @@
+services:
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana_app
+    restart: always
+    environment:
+      # Credenciais
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD}"
+
+      # Persistência no MySQL
+      GF_DATABASE_TYPE: "mysql"
+      GF_DATABASE_HOST: "${GRAFANA_DB_HOST}"
+      GF_DATABASE_PORT: "${GRAFANA_DB_PORT}"
+      GF_DATABASE_NAME: "${GRAFANA_DB_NAME}"
+      GF_DATABASE_USER: "${GRAFANA_DB_USER}"
+      GF_DATABASE_PASSWORD: "${GRAFANA_DB_PASSWORD}"
+      GF_DATABASE_SSL_MODE: "disable"
+      GF_PANELS_DISABLE_SANITIZE_HTML: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - /data/services/grafana/var_grafana:/var/lib/grafana
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - default
