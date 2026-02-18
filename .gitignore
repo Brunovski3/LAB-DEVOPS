@@ -1,0 +1,21 @@
+# IntelliJ / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Local overrides
+docker-compose.override.yml
