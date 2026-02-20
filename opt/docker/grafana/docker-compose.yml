@@ -8,8 +8,8 @@ services:
       GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER}"
       GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD}"
 
-      # Persistência no MySQL
-      GF_DATABASE_TYPE: "mysql"
+      # Persistência no Postgres
+      GF_DATABASE_TYPE: "postgres"
       GF_DATABASE_HOST: "${GRAFANA_DB_HOST}"
       GF_DATABASE_PORT: "${GRAFANA_DB_PORT}"
       GF_DATABASE_NAME: "${GRAFANA_DB_NAME}"
