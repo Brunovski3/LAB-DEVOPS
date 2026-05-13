@@ -36,4 +36,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-    - rede_automacao
+          - rede_automacao
+
+    networks:
+      rede_automacao:
+        external: true
