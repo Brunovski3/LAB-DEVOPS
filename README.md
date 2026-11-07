@@ -1,7 +1,7 @@
-# Docker Infra Prod – n8n, GLPI, Grafana & Komodo
-> 🚀 **Status**: Somente o **n8n** está ativo em produção. Os demais serviços estão em fase de implementação.
+# Docker Infra Prod – n8n, GLPI, Grafana & Komodo (GitOps via Komodo)
+> **Status**: n8n em produção, gerenciado pelo Komodo. Os composes de GLPI, Grafana e Komodo estão no Git e entram pela mesma esteira conforme passam por validação. Bancos de dados relacionais (Postgres/MySQL) rodam fora do Docker, em Bare Metal, para performance e estabilidade.
 
-Este repositório contém a configuração Docker para serviços críticos. Atualmente, o **n8n** (automação) é o serviço principal em operação, com **GLPI**, **Grafana** e **Komodo** em processo de configuração. Bancos de dados relacionais (Postgres/MySQL) são executados em **Bare Metal** para performance e estabilidade.
+Este repositório é a fonte da verdade da infra: os composes de cada serviço ficam versionados aqui, e o Komodo (IDP) sincroniza o estado do host com o Git via Resource Sync. Nada muda em produção sem um commit.
 ---
 ## ✨ Serviços Principais
 | Serviço | Descrição | Configuração | Dados/Volumes |
@@ -46,13 +46,16 @@ Diferente do n8n, GLPI e Grafana que rodam em Docker, seus bancos de dados estã
 - **Extra Hosts**: Os containers utilizam `host.docker.internal` para acessar o host quando necessário.
 ---
 ## 🚀 Como subir os serviços
-Para cada serviço, navegue até sua pasta em `opt/docker/` e use o docker-compose:
+
+**Via Komodo (padrão):** os recursos declarados em [`komodo/`](./komodo) fazem o sync automaticamente — push no Git vira diff no Komodo, e o deploy é confirmado no IDP (ou automaticamente, via webhook). Veja [`komodo/README.md`](./komodo/README.md) para o primeiro import e os TODOs de servidor/stacks.
+
+**Via Docker Compose (direto, fallback):**
 ```bash
 # Exemplo: Subindo n8n
-cd opt/docker/n8n
+cd n8n
 docker compose up -d
 # Exemplo: Subindo GLPI
-cd opt/docker/glpi
+cd glpi
 docker compose up -d
 ```
 ### Variáveis de Ambiente (.env)
@@ -61,22 +64,28 @@ Cada pasta em `opt/docker/` deve conter seu próprio `.env` ou um arquivo centra
 - Credenciais de acesso
 - Timezone (padrão `America/Sao_Paulo`)
 ---
-## 📂 Estrutura de Pastas Atualizada
+## 📂 Estrutura de Pastas
 ```
-Docker-Infra-Prod/
-├── data/services/            # Volumes persistentes e scripts
+LAB-DEVOPS/
+├── komodo/                 # Recursos declarados (Resource Sync do Komodo)
+│   ├── README.md           # Como importar e operar o sync
+│   ├── resource-sync.toml  # O sync que carrega os TOMLs abaixo
+│   └── resources/
+│       ├── server.toml     # O host de produção via Periphery
+│       └── stacks.toml     # As stacks: n8n, GLPI, Grafana, Komodo
+├── data/services/          # Volumes persistentes e scripts
 │   ├── glpi/
 │   ├── grafana/
+│   ├── komodo/
 │   └── n8n/
 │       ├── n8n_data/
 │       └── scripts/
-└── opt/docker/               # Configurações de orquestração
-    ├── glpi/
-    ├── grafana/
-    ├── komo.do/
-    └── n8n/
-        ├── Dockerfile
-        └── docker-compose.yml
+├── glpi/                   # Compose da aplicação
+├── grafana/
+├── komo.do/                # Core, Mongo e Periphery
+└── n8n/
+    ├── Dockerfile          # Imagem custom (Chromium/Puppeteer + OCI CLI)
+    └── compose.yaml
 ```
 ---
 ## 📝 Scripts n8n
